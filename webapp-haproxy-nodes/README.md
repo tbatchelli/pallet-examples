@@ -107,7 +107,7 @@ Visit http://<proxy public address>/ and confirm that the proxy is working. The 
                  :compute service 
                  :phase [:deploy-nano-webapp :restart-tomcat :restart-haproxy])
 
-### Finising up
+### Finishing up
 
 To finish up, destroy all the nodes:
 
