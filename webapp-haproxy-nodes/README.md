@@ -42,11 +42,10 @@ start a webapp node, and deploy our application.
 
     bash$ lein deps
     bash$ lein repl
-    user> (use 'pallet.maven)
-    user> (use 'org.jclouds.compute)
-    user> (use 'pallet.compute)
     user> (require 'webapp-nodes.nodes)
-    user> (def service (compute-service-from-settings))
+    user> (require 'pallet.compute)
+    user> (require 'pallet.core)
+    user> (def service (pallet.compute/compute-service-from-settings))
     user> (pallet.core/converge {webapp-nodes.nodes/proxied 1} :compute service :phase [:deploy-nano-webapp :restart-tomcat])
 
 Using the public IP address of your new node, check that the newly deployed application is running by visiting http://<node's public IP>:8080
@@ -59,7 +58,7 @@ Further deploys can be run with the `lift` function.
 
 or
 
-    user> (pallet.core/lift webapp-nodes.nodes/proxied service :deploy-nano-webapp)
+    user> (pallet.core/lift webapp-nodes.nodes/proxied :compute service :phase :deploy-nano-webapp)
 
 NOTE: The above methods should also work with mini-webapp by using the phase :deploy-mini-webapp.
 
@@ -88,7 +87,7 @@ or
 
 NOTE: if you experience an error trying to deploy some nodes after having converged to 0 at the REPL, try recreating the compute session:
 
-    user> (def service (compute-service-from-settings))
+    user> (def service (pallet.compute/compute-service-from-settings))
 
 ## Multinode deployments
 
