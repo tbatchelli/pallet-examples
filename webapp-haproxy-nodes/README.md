@@ -28,8 +28,7 @@ Then we build the war file in the [nano-webapp](http://github.com/hugoduncan/pal
 
 ### Testing from the command line
 
-To test the configuration, from the webapp-nodes directory, we start a webapp single instance of nano-webapp
-node, and deploy our application.
+To test the configuration, from the webapp-nodes directory, we start a webapp single instance of the 'proxied' node with nano-webapp deployed.
 
     bash$ lein deps
     bash$ lein pallet converge webapp-nodes.nodes/proxied 1 :deploy-nano-webapp :restart-tomcat 
@@ -50,6 +49,8 @@ start a webapp node, and deploy our application.
     user> (def service (compute-service-from-settings))
     user> (pallet.core/converge {webapp-nodes.nodes/proxied 1} :compute service :phase [:deploy-nano-webapp :restart-tomcat])
 
+Using the public IP address of your new node, check that the newly deployed application is running by visiting http://<node's public IP>:8080
+
 ### Redeploying your web application
 
 Further deploys can be run with the `lift` function.
@@ -64,7 +65,59 @@ NOTE: The above methods should also work with mini-webapp by using the phase :de
 
 ### Deploying from blobstore
 
-Since mini-webapp is a relatively large application, if one needs to instantiate many 'proxied' nodes, it will require uploading this .war file many times. You can optionally deploy a webapp from a blobstore. For that, you need to create a bucket in your blobstore and upload the file  
+Since mini-webapp is a relatively large application (5MB), if you were  to instantiate many 'proxied' nodes with this webapp, you would be uploading this .war file many times from your computer. For this reason you can optionally deploy a webapp from a blobstore. 
+
+For this to work you need to create a bucket in your blobstore and upload the file mini-webapp/mini-webapp-1.0.0-SNAPSHOT.war into the bucket. Make sure the bucket name coincides with the one set in settings.xml. If it is different, then you will need to update settings.xml and restart the REPL for pallet to pick up the changes.
+
+Once this is al set, just use the phase :deploy-from-blobstore instead of :deploy-nano-webapp (or :deploy-mini-webapp), i.e.:
+  
+   user> (def blobstore (pallet.blobstore/blobstore-from-settings)) 
+   user> (pallet.core/converge {webapp-nodes.nodes/proxied 1} 
+                 :compute service :blobstore blobstore 
+                 :phase [:deploy-from-blobstore :restart-tomcat])
+
+## Tearing down a deployment
+
+If you want to destroy the node/s you just created, all you need to do is set the count to 0 on converge, e.g.:
+
+    bash$ lein pallet converge webapp-nodes.nodes/proxied 0 
+
+or
+
+    user> (pallet.core/converge {webapp-nodes.nodes/proxied 0} :compute service)
+
+NOTE: if you experience an error trying to deploy some nodes after having converged to 0 at the REPL, try recreating the compute session:
+
+    user> (def service (compute-service-from-settings))
+
+## Multinode deployments
+
+We are going to deploy a few 'proxied' nodes and a 'haproxy' node that will be configured with HAProxy. For this job there are not many changes needed, though. 
+
+### At the command line
+
+    $ lein pallet converge webapp-nodes.nodes/proxied 2 webapp-nodes.nodes/haproxy 1 :deploy-nano-webapp :restart-tomcat :restart-haproxy
+
+Visit http://<proxy public address>/ and confirm that the proxy is working. The IP address reported by the webapps should change between refreshes of the page, reflecting the fact that the proxy is balancing the requests. (NOTE: it might take a while for HAProxy to switch webapps)
+
+### At the REPL
+
+    user> (pallet.core/converge {webapp-nodes.nodes/proxied 2
+                                 webapp-nodes.nodes/haproxy 1} 
+                 :compute service 
+                 :phase [:deploy-nano-webapp :restart-tomcat :restart-haproxy])
+
+### Finising up
+
+To finish up, destroy all the nodes:
+
+    $ lein pallet converge webapp-nodes.nodes/proxied 0 webapp-nodes.nodes/haproxy 0
+
+or
+
+    user> (pallet.core/converge {webapp-nodes.nodes/proxied 0
+                                 webapp-nodes.nodes/haproxy 0} 
+                 :compute service)
 
 ## License
 
