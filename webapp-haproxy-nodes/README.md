@@ -71,8 +71,8 @@ For this to work you need to create a bucket in your blobstore and upload the fi
 
 Once this is al set, just use the phase :deploy-from-blobstore instead of :deploy-nano-webapp (or :deploy-mini-webapp), i.e.:
   
-   user> (def blobstore (pallet.blobstore/blobstore-from-settings)) 
-   user> (pallet.core/converge {webapp-nodes.nodes/proxied 1} 
+    user> (def blobstore (pallet.blobstore/blobstore-from-settings)) 
+    user> (pallet.core/converge {webapp-nodes.nodes/proxied 1} 
                  :compute service :blobstore blobstore 
                  :phase [:deploy-from-blobstore :restart-tomcat])
 
