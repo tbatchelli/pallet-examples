@@ -5,7 +5,8 @@
    [pallet.crate.automated-admin-user :as automated-admin-user]
    [pallet.crate.haproxy :as haproxy]
    [pallet.crate.java :as java]
-   [pallet.crate.tomcat :as tomcat]))
+   [pallet.crate.tomcat :as tomcat]
+   [pallet.crate.mysql :as mysql]))
 
 (defn bootstrap
   "Common Bootstrap"
@@ -45,3 +46,15 @@
   (-> request
       (haproxy/proxied-by
        tag app :server-port port :check true :weight 1 :maxconn 50)))
+
+(defn mysql
+  "MySQL Server configuration"
+  [request password]
+  (-> request
+      (mysql/mysql-server password)))
+
+(defn create-db
+  "Creates a database in mysql"
+  [request db-name]
+  (-> request
+      (mysql/create-database db-name)))

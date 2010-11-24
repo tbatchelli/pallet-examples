@@ -40,3 +40,13 @@
                            "mini-webapp-1.0.0-SNAPSHOT.war"))
   :restart-tomcat (resource/phase
                    (service/service "tomcat6" :action :restart)))
+
+(core/defnode db
+  "a DB node"
+  {:inbound-ports [3306 22]}
+   :bootstrap (resource/phase
+               (crates/bootstrap))
+   :configure (resource/phase
+               (crates/mysql "password"))
+   :create-db (resource/phase
+               (crates/create-db "gogrid")))
