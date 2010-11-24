@@ -48,5 +48,7 @@
                (crates/bootstrap))
    :configure (resource/phase
                (crates/mysql "password"))
+   :restart-db (resource/phase
+                (service/service "mysqld" :action :restart))
    :create-db (resource/phase
-               (crates/create-db "gogrid")))
+               (crates/create-db "gogrid" "root" "")))

@@ -55,6 +55,6 @@
 
 (defn create-db
   "Creates a database in mysql"
-  [request db-name]
+  [request db-name username password]
   (-> request
-      (mysql/create-database db-name)))
+      (mysql/create-database db-name username password)))
