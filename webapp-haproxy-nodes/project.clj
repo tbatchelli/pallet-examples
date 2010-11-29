@@ -2,7 +2,7 @@
   :description "blank-project for pallet"
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
-                 [org.cloudhoist/pallet-all "0.4.0-SNAPSHOT"]
+                 [org.cloudhoist/pallet "0.3.1-SNAPSHOT"]
                  [org.jclouds/jclouds-aws "1.0-SNAPSHOT"]
                  [org.jclouds/jclouds-gogrid "1.0-SNAPSHOT"]
                  [org.jclouds/jclouds-jsch "1.0-SNAPSHOT"]
